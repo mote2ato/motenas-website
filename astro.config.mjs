@@ -18,7 +18,8 @@ export default defineConfig({
 		"/sample-page": "/",
 		"/renewal": "/",
 		"/feed": "/rss.xml",
-		"/category/[...slug]": "/blog",
+		// /category/* is handled by src/pages/category/[...slug].astro: as a static
+		// rule it becomes "/blog/index.html", which Cloudflare rejects as a loop.
 	},
 	integrations: [
 		react(),

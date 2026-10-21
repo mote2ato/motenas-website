@@ -37,6 +37,9 @@ pnpm run deploy
 ```
 
 - 初回デプロイで、D1データベース `motenas-website` とR2バケット `motenas-website-media` が自動で作られます。
+  R2はアカウントで先に有効化しておく必要があります（ダッシュボードの「R2」から）。
+- **2026-10-21 実施済み。** 仮URLは https://motenas-website.ato-b5b.workers.dev です。
+  セッション用のKV `motenas-website-session` も作られ、IDを `wrangler.jsonc` に記入しています。
 - 表示された `https://motenas-website.<アカウント>.workers.dev` を開き、`/_emdash/admin` で**初期設定ウィザード**を進めます。
   - **「サンプルコンテンツを含める（Include sample content）」をオンにしてください。** 会社案内・事業内容・アクセス・お問い合わせ・お知らせの初期データが入ります。
   - 管理者アカウントはパスキーで登録します。**パスキーはドメインごとに紐づく**ため、本番ドメインへ移ったあとで登録し直します（手順6）。
@@ -46,9 +49,25 @@ pnpm run deploy
 フォームの送信内容は、Resend経由で info@motenas.co.jp に届きます。
 
 1. [Resend](https://resend.com) に登録し、Domains で `motenas.co.jp` を追加。
-2. 表示されたDNSレコード（`resend._domainkey` のTXT、`send` のMX/TXT）を控えておきます。
-   **ルートのMXは変更しないので、さくらのメールと共存できます。** 追加はDNSをCloudflareへ移したあと（手順5）に行うのが簡単です。
-3. APIキーを作成し、Workerに登録:
+   **2026-10-21 実施済み**（リージョン：東京 ap-northeast-1、ドメインID `168d16d0-1ed5-4305-a5fb-fbe9c84adbda`）。
+2. Resendが指定したDNSレコードは次のとおりです（まだDNSには入れていません）。
+   **ルートのMXは変更しないので、さくらのメールと共存できます。** 追加はDNSをCloudflareへ移したあと（手順5）に行います。
+
+| 名前 | 種類 | 値 | 優先度 |
+|---|---|---|---|
+| resend._domainkey.motenas.co.jp | TXT | 下記のDKIM公開鍵 | — |
+| send.motenas.co.jp | MX | feedback-smtp.ap-northeast-1.amazonses.com | 10 |
+| send.motenas.co.jp | TXT | `v=spf1 include:amazonses.com ~all` | — |
+| rsend.motenas.co.jp | CNAME | send.forge.rmta.net | — |
+
+   DKIM（`resend._domainkey` のTXT）の値:
+
+```
+p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDOXNK9Mn+0v6FqAYzuRMKfN9CLCpBf+1oDFJECiYlAA1ryiE7n7fHYoUIQBR8ViBVUhiQ6HTImfEkDHvTCn2twLllBIea2pUW1DY9Ep43vjs2i/RXURIv+fCoTYHHqD6AJYvmeRRltSON8gmF5u+H3yxXo3Eh2io4+zAtNUqO3HQIDAQAB
+```
+
+3. APIキーを作成し、Workerに登録します。キーの権限は「Sending access」、対象ドメインは `motenas.co.jp` に限定してください。
+   Full access のキーは作業用に一時的に使ったものなので、作業後にResendで削除します。
 
 ```bash
 npx wrangler secret put RESEND_API_KEY
@@ -88,7 +107,10 @@ npx wrangler secret put RESEND_API_KEY
 | motenas.co.jp | MX | 10 www655b.sakura.ne.jp | — |
 | motenas.co.jp | TXT | `v=spf1 a:www655b.sakura.ne.jp mx include:_spf.google.com ~all`（現状のまま） | — |
 | motenas.co.jp | TXT | `google-site-verification=…`（現状のまま） | — |
-| Resendが指定したレコード | TXT/MX | 手順3で控えた値 | DNSのみ |
+| resend._domainkey | TXT | 手順3のDKIM公開鍵 | — |
+| send | MX | 10 feedback-smtp.ap-northeast-1.amazonses.com | — |
+| send | TXT | `v=spf1 include:amazonses.com ~all` | — |
+| rsend | CNAME | send.forge.rmta.net | DNSのみ |
 
    ※ ResendのSPFは送信用サブドメイン（`send.motenas.co.jp`）側に入るので、ルートのSPFは変更不要です。
    ※ ルートの `A 112.78.125.115` は、次の手順でWorkerに切り替えるので削除してかまいません。
@@ -96,6 +118,8 @@ npx wrangler secret put RESEND_API_KEY
 
 3. さくらインターネットの会員メニューで、motenas.co.jp のネームサーバーを、Cloudflareが指定する2つに変更します。
 4. Cloudflare上で「有効」になるまで待ちます（数分〜最大48時間）。
+5. ResendのDomains画面で `motenas.co.jp` の「Verify」を押し、Verified になることを確認します。
+   Verified になるまでは、お問い合わせフォームのメールは送れません。
 
 ## 6. 本番ドメインをWorkerに割り当てる
 
