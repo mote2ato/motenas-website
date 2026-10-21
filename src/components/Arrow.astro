@@ -1,0 +1,18 @@
+---
+interface Props {
+	/** "right" for in-site links, "up-right" for links that leave the site. */
+	direction?: "right" | "up-right";
+}
+
+const { direction = "right" } = Astro.props;
+---
+
+<svg class="arrow" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+	{
+		direction === "right" ? (
+			<path d="M1 6h9.5M6.5 2l4 4-4 4" stroke="currentColor" stroke-width="1" />
+		) : (
+			<path d="M3 9l6-6M4 3h5v5" stroke="currentColor" stroke-width="1" />
+		)
+	}
+</svg>

@@ -1,0 +1,352 @@
+---
+import { getEmDashCollection } from "emdash";
+import Arrow from "../components/Arrow.astro";
+import EntryList from "../components/EntryList.astro";
+import SectionHead from "../components/SectionHead.astro";
+import StackTitle from "../components/StackTitle.astro";
+import Base from "../layouts/Base.astro";
+import { COMPANY } from "../lib/company";
+
+const [servicesResult, newsResult, postsResult] = await Promise.all([
+	getEmDashCollection("services", { orderBy: { sort_order: "asc" }, limit: 12 }),
+	getEmDashCollection("news", { orderBy: { published_at: "desc" }, limit: 4 }),
+	getEmDashCollection("posts", { orderBy: { published_at: "desc" }, limit: 4 }),
+]);
+
+if (Astro.cache?.enabled) {
+	Astro.cache.set(servicesResult.cacheHint);
+	Astro.cache.set(newsResult.cacheHint);
+	Astro.cache.set(postsResult.cacheHint);
+}
+
+const services = servicesResult.entries;
+const news = newsResult.entries.map((entry) => ({
+	href: `/news/${entry.id}`,
+	title: entry.data.title,
+	date: entry.data.publishedAt,
+}));
+const posts = postsResult.entries.map((entry) => ({
+	href: `/blog/${entry.id}`,
+	title: entry.data.title,
+	date: entry.data.publishedAt,
+}));
+
+const jsonLd = {
+	"@context": "https://schema.org",
+	"@type": "Organization",
+	name: COMPANY.name,
+	alternateName: COMPANY.nameEn,
+	url: Astro.url.origin,
+	logo: new URL("/icon-512.png", Astro.url.origin).href,
+	telephone: COMPANY.tel,
+	address: {
+		"@type": "PostalAddress",
+		postalCode: COMPANY.postalCode.replace("〒", ""),
+		addressRegion: "埼玉県",
+		addressLocality: "さいたま市大宮区",
+		streetAddress: "宮町1-5 銀座ビル7階",
+		addressCountry: "JP",
+	},
+};
+---
+
+<Base overlayHeader description="中小企業・ひとり起業家のための、実装できるAIとコンセプト。AI導入支援、起業コンサルティング、新規事業向けデザインの株式会社もてなす。">
+	<script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+
+	<!-- Hero -->
+	<section class="art hero" aria-labelledby="hero-title">
+		<picture>
+			<source
+				type="image/webp"
+				srcset="/images/a001-960.webp 960w, /images/a001-1900.webp 1900w"
+				sizes="100vw"
+			/>
+			<img
+				src="/images/a001-1900.jpg"
+				alt=""
+				class="art__img hero__img"
+				width="1900"
+				height="600"
+				fetchpriority="high"
+			/>
+		</picture>
+		<div class="hero__content">
+			<StackTitle lines={["Before AI,", "design the", "system."]} as="p" />
+			<h1 id="hero-title" class="heading hero__title">AIを入れる前に、<br />やるべきことがある。</h1>
+			<p class="hero__lead">
+				成果につながる“仕組み”を、設計から定着まで。<br />
+				中小企業・ひとり起業家のための、実装できるAIとコンセプト。
+			</p>
+			<div class="actions">
+				<a href="/service" class="btn">事業内容を見る <Arrow /></a>
+				<a href="/contact" class="btn btn--ghost">無料相談・お問い合わせ</a>
+			</div>
+		</div>
+		<p class="caption hero__scroll" aria-hidden="true">Scroll</p>
+	</section>
+
+	<!-- Service -->
+	<section class="section container" aria-labelledby="service-title">
+		<SectionHead index="01" en={["Service"]} ja="事業内容">
+			<p class="lead measure">
+				アイデアの具体化から、AIの導入と定着、立ち上げに必要なデザインまで。事業のはじまりから伴走します。
+			</p>
+		</SectionHead>
+		<ol class="services" role="list">
+			{
+				services.map((service, i) => (
+					<li class="services__item">
+						<a href={`/service#${service.id}`} class="services__link">
+							<span class="caption services__index">{String(i + 1).padStart(2, "0")}</span>
+							<span class="services__name">
+								<span class="heading-sm">{service.data.title}</span>
+								{service.data.title_en && (
+									<span class="mono muted" lang="en">
+										{service.data.title_en}
+									</span>
+								)}
+							</span>
+							<span class="services__summary muted">{service.data.summary}</span>
+							<Arrow />
+						</a>
+					</li>
+				))
+			}
+		</ol>
+	</section>
+
+	<!-- Philosophy -->
+	<section class="philosophy" aria-labelledby="philosophy-title">
+		<div class="art art--scrim philosophy__art">
+			<picture>
+				<source
+					type="image/webp"
+					srcset="/images/a002-960.webp 960w, /images/a002-1900.webp 1900w"
+					sizes="100vw"
+				/>
+				<img
+					src="/images/a002-1900.jpg"
+					alt=""
+					class="art__img philosophy__img"
+					width="1900"
+					height="600"
+					loading="lazy"
+				/>
+			</picture>
+			<div class="philosophy__title container">
+				<p class="caption">02 Philosophy</p>
+				<StackTitle lines={["No front,", "no back."]} />
+				<h2 id="philosophy-title" class="heading">社名の由来と理念</h2>
+			</div>
+		</div>
+		<div class="philosophy__body container">
+			<p class="philosophy__text measure">
+				「もてなす」という社名には、日本の伝統的な「おもてなし」の精神が込められています。語源は「表裏なし」（表裏のない気持ちでお客様を迎える）と、「モノを持って成し遂げる」（物や気持ちを用いて目的を達成する）。私たちはこの精神を大切にし、クライアントのニーズに真摯に向き合い、最適なソリューションを提供することを使命としています。
+			</p>
+			<div class="actions">
+				<a href="/about" class="btn">会社案内 <Arrow /></a>
+			</div>
+		</div>
+	</section>
+
+	<!-- News & Journal -->
+	<section class="section container updates" aria-label="お知らせとブログ">
+		<div class="updates__col">
+			<SectionHead index="03" en={["News"]} ja="お知らせ" />
+			<EntryList items={news} empty="お知らせはまだありません。" />
+			<a href="/news" class="text-link updates__more">お知らせ一覧 <Arrow /></a>
+		</div>
+		<div class="updates__col">
+			<SectionHead index="04" en={["Journal"]} ja="ブログ" />
+			<EntryList items={posts} empty="ブログ記事は準備中です。" />
+			<a href="/blog" class="text-link updates__more">ブログ一覧 <Arrow /></a>
+		</div>
+	</section>
+
+	<!-- Art frame -->
+	<div class="art band" aria-hidden="true">
+		<picture>
+			<source
+				type="image/webp"
+				srcset="/images/a003-960.webp 960w, /images/a003-1900.webp 1900w"
+				sizes="100vw"
+			/>
+			<img src="/images/a003-1900.jpg" alt="" class="art__img band__img" width="1900" height="600" loading="lazy" />
+		</picture>
+	</div>
+
+	<!-- Contact -->
+	<section class="section container cta" aria-labelledby="cta-title">
+		<p class="caption">05 Contact</p>
+		<StackTitle lines={["Let's build", "it together."]} />
+		<h2 id="cta-title" class="heading">AIで未来を創る、あなたのビジネスパートナー</h2>
+		<p class="lead measure">
+			最新のAI技術で、業務効率化と新規事業開発をサポートします。無料相談を実施中です。お気軽にお問い合わせください。
+		</p>
+		<div class="actions">
+			<a href="/contact" class="btn">お問い合わせ <Arrow /></a>
+			<a href={`tel:${COMPANY.tel.replaceAll("-", "")}`} class="btn btn--ghost">TEL {COMPANY.tel}</a>
+		</div>
+		<p class="caption cta__hours">営業時間 {COMPANY.hours}</p>
+	</section>
+</Base>
+
+<style>
+	.hero {
+		display: flex;
+		align-items: flex-end;
+		min-height: max(560px, 100svh);
+		padding: calc(var(--header-height) + 40px) var(--gutter) clamp(56px, 9vh, 96px);
+	}
+
+	.hero__img {
+		object-position: 30% 50%;
+	}
+
+	.hero::before {
+		content: "";
+		position: absolute;
+		inset: 0;
+		z-index: -1;
+		background: linear-gradient(0deg, rgb(0 0 0 / 0.78) 0%, rgb(0 0 0 / 0.2) 55%, rgb(0 0 0 / 0.35) 100%);
+	}
+
+	.hero__content {
+		display: grid;
+		gap: 24px;
+		max-width: 760px;
+	}
+
+	.hero__title {
+		margin-top: 12px;
+	}
+
+	.hero__lead {
+		color: var(--color-frost);
+		font-size: 15px;
+		line-height: 2;
+	}
+
+	.hero__scroll {
+		position: absolute;
+		right: var(--gutter);
+		bottom: clamp(56px, 9vh, 96px);
+		writing-mode: vertical-rl;
+	}
+
+	@media (max-width: 640px) {
+		.hero__scroll {
+			display: none;
+		}
+	}
+
+	.services {
+		padding: 0;
+		list-style: none;
+		border-top: 1px solid var(--color-hairline);
+	}
+
+	.services__link {
+		display: grid;
+		grid-template-columns: 56px minmax(0, 1.1fr) minmax(0, 1.4fr) auto;
+		gap: 12px 32px;
+		align-items: baseline;
+		padding: 32px 0;
+		border-bottom: 1px solid var(--color-hairline);
+		transition: border-color 0.2s ease;
+	}
+
+	.services__link:hover {
+		border-bottom-color: var(--color-frost);
+	}
+
+	.services__name {
+		display: grid;
+		gap: 6px;
+	}
+
+	.services__summary {
+		font-size: 14px;
+		line-height: 1.9;
+	}
+
+	@media (max-width: 860px) {
+		.services__link {
+			grid-template-columns: 40px 1fr auto;
+		}
+
+		.services__summary {
+			grid-column: 2 / 3;
+		}
+	}
+
+	.philosophy__art {
+		display: flex;
+		align-items: flex-end;
+		min-height: max(520px, 80svh);
+		padding-block: var(--space-116) 56px;
+	}
+
+	.philosophy__img {
+		object-position: 70% 50%;
+	}
+
+	.philosophy__title {
+		display: grid;
+		gap: 24px;
+	}
+
+	.philosophy__body {
+		display: grid;
+		gap: 8px;
+		padding-block: 56px var(--space-116);
+	}
+
+	.philosophy__text {
+		color: var(--color-frost);
+		line-height: 2.1;
+	}
+
+	.updates {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 72px 56px;
+	}
+
+	.updates__col :global(.entry-list__row) {
+		grid-template-columns: 1fr auto;
+	}
+
+	.updates__col :global(.entry-list__meta) {
+		grid-column: 1 / -1;
+	}
+
+	.updates__more {
+		margin-top: 24px;
+	}
+
+	@media (max-width: 960px) {
+		.updates {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	.band {
+		height: clamp(220px, 32vw, 600px);
+	}
+
+	.band__img {
+		object-position: 80% 50%;
+	}
+
+	.cta {
+		display: grid;
+		gap: 24px;
+		border-top: 0;
+	}
+
+	.cta__hours {
+		margin-top: 8px;
+		color: var(--color-ash);
+	}
+</style>

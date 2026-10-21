@@ -1,0 +1,15 @@
+---
+import { decodeSlug, getTerm } from "emdash";
+import BlogIndex from "../../../components/BlogIndex.astro";
+import Base from "../../../layouts/Base.astro";
+
+const slug = decodeSlug(Astro.params.slug);
+if (!slug) return Astro.rewrite("/404");
+
+const term = await getTerm("category", slug);
+if (!term) return Astro.rewrite("/404");
+---
+
+<Base title={`${term.label} | ブログ`} description={`「${term.label}」の記事一覧です。`}>
+	<BlogIndex category={{ slug: term.slug, label: term.label }} />
+</Base>

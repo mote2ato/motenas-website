@@ -1,0 +1,21 @@
+---
+interface Props {
+	items?: { label: string; value: string }[] | null;
+	edit?: Record<string, unknown>;
+}
+
+const { items, edit = {} } = Astro.props;
+---
+
+{
+	items && items.length > 0 && (
+		<dl class="facts" {...edit}>
+			{items.map((item) => (
+				<div class="facts__row">
+					<dt class="facts__label">{item.label}</dt>
+					<dd class="facts__value">{item.value}</dd>
+				</div>
+			))}
+		</dl>
+	)
+}

@@ -1,0 +1,27 @@
+---
+import { decodeSlug, getEmDashEntry, getSeoMeta } from "emdash";
+import Article from "../../components/Article.astro";
+import Base from "../../layouts/Base.astro";
+
+const slug = decodeSlug(Astro.params.slug);
+if (!slug) return Astro.rewrite("/404");
+
+const { entry, cacheHint } = await getEmDashEntry("news", slug);
+if (!entry) return Astro.rewrite("/404");
+if (Astro.cache?.enabled) Astro.cache.set(cacheHint);
+
+const seo = getSeoMeta(entry, { siteUrl: Astro.url.origin, path: `/news/${entry.id}` });
+---
+
+<Base
+	title={seo.title}
+	pageTitle={entry.data.title}
+	description={seo.description}
+	image={seo.ogImage}
+	canonical={seo.canonical}
+	robots={seo.robots}
+	content={{ collection: "news", id: entry.data.id, slug: entry.id }}
+	pageType="article"
+>
+	<Article entry={entry} section={{ href: "/news", label: "お知らせ", en: "News" }} />
+</Base>
