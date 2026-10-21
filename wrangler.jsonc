@@ -1,0 +1,39 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "motenas-website",
+	"main": "./src/worker.ts",
+	"compatibility_date": "2026-02-24",
+	"compatibility_flags": ["nodejs_compat"],
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "motenas-website",
+		},
+	],
+	"r2_buckets": [
+		{
+			"binding": "MEDIA",
+			"bucket_name": "motenas-website-media",
+		},
+	],
+	"vars": {
+		// お問い合わせの送信先
+		"CONTACT_TO": "info@motenas.co.jp",
+		// 送信元（Resendで認証したドメインのアドレス）
+		"CONTACT_FROM": "株式会社もてなす <noreply@motenas.co.jp>",
+		// Cloudflare Turnstile のサイトキー（空なら迷惑送信対策はハニーポットのみ）
+		"TURNSTILE_SITE_KEY": "",
+	},
+	// 秘密情報は `wrangler secret put` で登録する: RESEND_API_KEY, TURNSTILE_SECRET_KEY
+	// 本番ドメインの割り当て（DNSをCloudflareへ移したあとに有効化）:
+	// "routes": [
+	// 	{ "pattern": "motenas.co.jp", "custom_domain": true },
+	// 	{ "pattern": "www.motenas.co.jp", "custom_domain": true },
+	// ],
+	// Sandboxed plugins require Worker Loader, available on Workers paid plans. Uncomment to enable:
+	// "worker_loaders": [{ "binding": "LOADER" }],
+	// 予約公開などの定期処理
+	"triggers": {
+		"crons": ["* * * * *"],
+	},
+}

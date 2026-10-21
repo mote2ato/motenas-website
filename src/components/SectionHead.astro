@@ -1,0 +1,26 @@
+---
+import StackTitle from "./StackTitle.astro";
+
+interface Props {
+	/** Small index label, e.g. "01". */
+	index?: string;
+	/** Latin display title, one entry per stacked line. */
+	en: string[];
+	/** Japanese heading shown under the display title. */
+	ja: string;
+	as?: "h1" | "h2";
+}
+
+const { index, en, ja, as = "h2" } = Astro.props;
+const Heading = as;
+---
+
+<header class="section-head">
+	<div class="section-head__meta">
+		{index && <span class="caption">{index}</span>}
+		<span class="caption">{en.join(" ")}</span>
+	</div>
+	<StackTitle lines={en} />
+	<Heading class="heading">{ja}</Heading>
+	<slot />
+</header>

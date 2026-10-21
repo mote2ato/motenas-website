@@ -1,0 +1,52 @@
+---
+import { decodeSlug } from "emdash";
+import { PortableText } from "emdash/ui";
+import Facts from "../components/Facts.astro";
+import PageHeader from "../components/PageHeader.astro";
+import Base from "../layouts/Base.astro";
+import { displayLines, loadPage } from "../lib/page";
+
+const slug = decodeSlug(Astro.params.slug);
+if (!slug) return Astro.rewrite("/404");
+
+const result = await loadPage(Astro, slug);
+if (!result) return Astro.rewrite("/404");
+const { page, seo } = result;
+---
+
+<Base
+	title={seo.title}
+	pageTitle={page.data.title}
+	description={seo.description}
+	image={seo.ogImage}
+	canonical={seo.canonical}
+	robots={seo.robots}
+	content={{ collection: "pages", id: page.data.id, slug: page.id }}
+>
+	<PageHeader
+		en={displayLines(page.data.title_en, page.id)}
+		title={page.data.title}
+		lead={page.data.lead}
+		titleEdit={page.edit.title}
+		leadEdit={page.edit.lead}
+		breadcrumb={[{ href: `/${page.id}`, label: page.data.title }]}
+	/>
+
+	{
+		page.data.content && page.data.content.length > 0 && (
+			<section class="section container">
+				<div class="prose" {...page.edit.content}>
+					<PortableText value={page.data.content} />
+				</div>
+			</section>
+		)
+	}
+
+	{
+		page.data.facts && page.data.facts.length > 0 && (
+			<section class="section container" aria-label={`${page.data.title}の詳細`}>
+				<Facts items={page.data.facts} edit={page.edit.facts} />
+			</section>
+		)
+	}
+</Base>

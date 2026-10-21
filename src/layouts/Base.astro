@@ -1,0 +1,456 @@
+---
+import { Font } from "astro:assets";
+import { getMenuWithCacheHint, getSiteSettingsWithCacheHint } from "emdash";
+import { createPublicPageContext } from "emdash/page";
+import { EmDashBodyEnd, EmDashBodyStart, EmDashHead } from "emdash/ui";
+import Arrow from "../components/Arrow.astro";
+import { COMPANY } from "../lib/company";
+import { resolveSiteIdentity } from "../utils/site";
+import "../styles/global.css";
+
+interface Props {
+	title?: string;
+	pageTitle?: string | null;
+	description?: string | null;
+	image?: string | null;
+	canonical?: string | null;
+	robots?: string | null;
+	content?: { collection: string; id: string; slug?: string | null };
+	/** The page opens with full-bleed artwork, so the header floats over it. */
+	overlayHeader?: boolean;
+	pageType?: "website" | "article";
+}
+
+const {
+	title,
+	pageTitle,
+	description,
+	image,
+	canonical,
+	robots,
+	content,
+	overlayHeader = false,
+	pageType = "website",
+} = Astro.props;
+
+const [settingsResult, menuResult] = await Promise.all([
+	getSiteSettingsWithCacheHint(),
+	getMenuWithCacheHint("primary"),
+]);
+if (Astro.cache?.enabled) {
+	Astro.cache.set(settingsResult.cacheHint);
+	Astro.cache.set(menuResult.cacheHint);
+}
+
+const { siteTitle, siteTagline, titleSeparator } = resolveSiteIdentity(settingsResult.data);
+const fullTitle = title
+	? title.includes(siteTitle)
+		? title
+		: `${title} ${titleSeparator} ${siteTitle}`
+	: siteTitle;
+
+const WHITESPACE = /\s+/;
+const menuItems = menuResult.data?.items ?? [];
+const isButton = (item: (typeof menuItems)[number]) =>
+	item.cssClasses?.split(WHITESPACE).includes("button") ?? false;
+const navLinks = menuItems.filter((item) => !isButton(item));
+const navButtons = menuItems.filter(isButton);
+
+const path = Astro.url.pathname.replace(/\/+$/, "") || "/";
+const isCurrent = (url: string) => {
+	const target = url.replace(/\/+$/, "") || "/";
+	return target === "/" ? path === "/" : path === target || path.startsWith(`${target}/`);
+};
+
+const defaultImage = new URL("/images/a001-1900.jpg", Astro.url.origin).href;
+const pageCtx = createPublicPageContext({
+	Astro,
+	kind: content ? "content" : "custom",
+	pageType,
+	title: fullTitle,
+	pageTitle: pageTitle ?? title ?? siteTitle,
+	description: description || siteTagline || undefined,
+	canonical: canonical ?? `${Astro.url.origin}${Astro.url.pathname}`,
+	image: image ?? defaultImage,
+	content,
+	seo: { ogImage: image ?? defaultImage, robots },
+	siteName: siteTitle,
+});
+
+const year = new Date().getFullYear();
+---
+
+<!doctype html>
+<html lang="ja">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="theme-color" content="#000000" />
+		<title>{fullTitle}</title>
+		<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+		<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+		<link rel="alternate" type="application/rss+xml" title={`${siteTitle} ブログ`} href="/rss.xml" />
+		<EmDashHead page={pageCtx} />
+		<Font cssVariable="--font-display" preload />
+		<Font cssVariable="--font-mono" preload />
+		<Font cssVariable="--font-jp" />
+	</head>
+	<body class:list={{ "has-overlay-header": overlayHeader }}>
+		<EmDashBodyStart page={pageCtx} />
+		<a href="#main" class="skip-link mono">本文へスキップ</a>
+
+		<header class="site-header" data-site-header>
+			<a href="/" class="brand" aria-label={`${siteTitle} トップページ`}>
+				<img src="/images/mark-white.png" alt="" width="20" height="20" class="brand__mark" />
+				<span class="brand__name mono" lang="en">motenas</span>
+			</a>
+
+			<nav class="nav" aria-label="メイン">
+				<ul class="nav__list" role="list">
+					{
+						navLinks.map((item) => (
+							<li>
+								<a
+									href={item.url}
+									class="nav__link mono"
+									aria-current={isCurrent(item.url) ? "page" : undefined}
+									target={item.target || undefined}
+									rel={item.target === "_blank" ? "noopener noreferrer" : undefined}
+								>
+									{item.label}
+								</a>
+							</li>
+						))
+					}
+				</ul>
+			</nav>
+
+			<div class="site-header__end">
+				{
+					navButtons.map((item) => (
+						<a href={item.url} class="btn nav__button">
+							{item.label}
+						</a>
+					))
+				}
+				<button
+					type="button"
+					class="menu-toggle mono"
+					aria-expanded="false"
+					aria-controls="mobile-menu"
+					data-menu-toggle
+				>
+					<span data-menu-label>MENU</span>
+				</button>
+			</div>
+		</header>
+
+		<div id="mobile-menu" class="mobile-menu" hidden data-mobile-menu>
+			<ul role="list">
+				<li><a href="/" class="mobile-menu__link">トップページ</a></li>
+				{
+					menuItems.map((item) => (
+						<li>
+							<a
+								href={item.url}
+								class="mobile-menu__link"
+								aria-current={isCurrent(item.url) ? "page" : undefined}
+							>
+								{item.label}
+							</a>
+						</li>
+					))
+				}
+			</ul>
+			<p class="caption mobile-menu__hours">営業時間 {COMPANY.hours}</p>
+		</div>
+
+		<main id="main">
+			<slot />
+		</main>
+
+		<footer class="site-footer">
+			<div class="site-footer__grid container">
+				<div class="site-footer__company">
+					<a href="/" class="brand">
+						<img src="/images/mark-white.png" alt="" width="20" height="20" class="brand__mark" />
+						<span class="brand__name mono" lang="en">motenas</span>
+					</a>
+					<p class="site-footer__name">{COMPANY.name}</p>
+					<address class="site-footer__address muted">
+						{COMPANY.postalCode} {COMPANY.address}<br />
+						TEL {COMPANY.tel}
+					</address>
+				</div>
+				<nav aria-label="フッター">
+					<ul class="site-footer__links" role="list">
+						{
+							menuItems.map((item) => (
+								<li>
+									<a href={item.url} class="text-link">
+										{item.label}
+									</a>
+								</li>
+							))
+						}
+						<li>
+							<a href="/rss.xml" class="text-link">RSS</a>
+						</li>
+					</ul>
+				</nav>
+			</div>
+			<div class="site-footer__bottom container">
+				<p class="caption">営業時間 {COMPANY.hours}</p>
+				<p class="caption">© {year} motenas.inc</p>
+				<a href="#main" class="caption site-footer__top">
+					Page top <Arrow direction="up-right" />
+				</a>
+			</div>
+		</footer>
+
+		<EmDashBodyEnd page={pageCtx} />
+
+		<script>
+			const header = document.querySelector<HTMLElement>("[data-site-header]");
+			const toggle = document.querySelector<HTMLButtonElement>("[data-menu-toggle]");
+			const menu = document.querySelector<HTMLElement>("[data-mobile-menu]");
+			const label = document.querySelector<HTMLElement>("[data-menu-label]");
+
+			const onScroll = () => header?.classList.toggle("is-scrolled", window.scrollY > 24);
+			onScroll();
+			window.addEventListener("scroll", onScroll, { passive: true });
+
+			const setOpen = (open: boolean) => {
+				if (!toggle || !menu) return;
+				toggle.setAttribute("aria-expanded", String(open));
+				menu.hidden = !open;
+				document.body.classList.toggle("menu-open", open);
+				if (label) label.textContent = open ? "CLOSE" : "MENU";
+			};
+
+			toggle?.addEventListener("click", () => {
+				setOpen(toggle.getAttribute("aria-expanded") !== "true");
+			});
+			document.addEventListener("keydown", (event) => {
+				if (event.key === "Escape") setOpen(false);
+			});
+			window.matchMedia("(min-width: 960px)").addEventListener("change", (event) => {
+				if (event.matches) setOpen(false);
+			});
+		</script>
+
+		<style>
+			.skip-link {
+				position: absolute;
+				top: -100px;
+				left: 16px;
+				z-index: 100;
+				padding: 8px 12px;
+				background: var(--color-bone);
+				color: var(--color-void);
+				border-radius: var(--radius-sm);
+			}
+
+			.skip-link:focus {
+				top: 12px;
+			}
+
+			.site-header {
+				position: fixed;
+				inset: 0 0 auto;
+				z-index: 50;
+				display: flex;
+				align-items: center;
+				gap: 24px;
+				height: var(--header-height);
+				padding-inline: clamp(16px, 2vw, 25px);
+				border-bottom: 1px solid var(--color-hairline);
+				background: rgb(0 0 0 / 0.92);
+				transition: background-color 0.3s ease;
+			}
+
+			.has-overlay-header .site-header:not(.is-scrolled) {
+				background: transparent;
+				border-bottom-color: rgb(226 226 226 / 0.1);
+			}
+
+			body:not(.has-overlay-header) main {
+				padding-top: var(--header-height);
+			}
+
+			.brand {
+				display: inline-flex;
+				align-items: center;
+				gap: 8px;
+				flex: none;
+			}
+
+			.brand__mark {
+				width: 20px;
+				height: 20px;
+			}
+
+			.brand__name {
+				font-size: 13px;
+			}
+
+			.nav {
+				flex: 1;
+				display: flex;
+				justify-content: center;
+			}
+
+			.nav__list {
+				display: flex;
+				gap: 7px;
+				padding: 0;
+				list-style: none;
+			}
+
+			.nav__link {
+				display: inline-block;
+				padding: 6px 18px;
+				border-bottom: 1px solid transparent;
+				transition: border-color 0.2s ease;
+			}
+
+			.nav__link:hover,
+			.nav__link[aria-current="page"] {
+				border-bottom-color: var(--color-frost);
+			}
+
+			.site-header__end {
+				display: flex;
+				align-items: center;
+				gap: 12px;
+				margin-left: auto;
+			}
+
+			.nav__button {
+				min-height: 32px;
+				padding: 8px 16px;
+			}
+
+			.menu-toggle {
+				display: none;
+				min-height: 32px;
+				padding: 8px 12px;
+				border: 1px solid var(--color-hairline-strong);
+				border-radius: var(--radius-sm);
+				background: transparent;
+				cursor: pointer;
+			}
+
+			.mobile-menu {
+				position: fixed;
+				inset: var(--header-height) 0 0;
+				z-index: 49;
+				overflow-y: auto;
+				padding: 24px var(--gutter) 40px;
+				background: var(--color-void);
+			}
+
+			.mobile-menu[hidden] {
+				display: none;
+			}
+
+			.mobile-menu ul {
+				padding: 0;
+				list-style: none;
+				border-top: 1px solid var(--color-hairline);
+			}
+
+			.mobile-menu__link {
+				display: block;
+				padding: 18px 0;
+				border-bottom: 1px solid var(--color-hairline);
+				font-size: 18px;
+			}
+
+			.mobile-menu__link[aria-current="page"] {
+				color: var(--color-ash);
+			}
+
+			.mobile-menu__hours {
+				margin-top: 24px;
+			}
+
+			:global(body.menu-open) {
+				overflow: hidden;
+			}
+
+			@media (max-width: 959px) {
+				.nav {
+					display: none;
+				}
+
+				.menu-toggle {
+					display: inline-block;
+				}
+			}
+
+			@media (max-width: 420px) {
+				.nav__button {
+					display: none;
+				}
+			}
+
+			.site-footer {
+				border-top: 1px solid var(--color-hairline);
+				padding-top: 56px;
+			}
+
+			.site-footer__grid {
+				display: grid;
+				grid-template-columns: 1fr auto;
+				gap: 40px;
+			}
+
+			.site-footer__name {
+				margin-top: 20px;
+			}
+
+			.site-footer__address {
+				margin-top: 4px;
+				font-style: normal;
+				font-size: 13px;
+				line-height: 1.8;
+			}
+
+			.site-footer__links {
+				display: grid;
+				grid-template-columns: repeat(2, auto);
+				gap: 12px 40px;
+				padding: 0;
+				list-style: none;
+			}
+
+			.site-footer__bottom {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 12px 32px;
+				align-items: center;
+				margin-top: 56px;
+				padding-block: 20px;
+				border-top: 1px solid var(--color-hairline);
+			}
+
+			.site-footer__top {
+				display: inline-flex;
+				gap: 6px;
+				align-items: center;
+				margin-left: auto;
+			}
+
+			@media (max-width: 720px) {
+				.site-footer__grid {
+					grid-template-columns: 1fr;
+				}
+
+				.site-footer__top {
+					margin-left: 0;
+				}
+			}
+		</style>
+	</body>
+</html>

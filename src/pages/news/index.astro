@@ -1,0 +1,40 @@
+---
+import { getEmDashCollection } from "emdash";
+import Arrow from "../../components/Arrow.astro";
+import EntryList from "../../components/EntryList.astro";
+import PageHeader from "../../components/PageHeader.astro";
+import Base from "../../layouts/Base.astro";
+
+const cursor = Astro.url.searchParams.get("cursor") ?? undefined;
+const { entries, nextCursor, cacheHint } = await getEmDashCollection("news", {
+	orderBy: { published_at: "desc" },
+	limit: 20,
+	cursor,
+});
+if (Astro.cache?.enabled) Astro.cache.set(cacheHint);
+
+const items = entries.map((entry) => ({
+	href: `/news/${entry.id}`,
+	title: entry.data.title,
+	date: entry.data.publishedAt,
+}));
+---
+
+<Base title="お知らせ" description="株式会社もてなすからのお知らせです。">
+	<PageHeader en={["News"]} title="お知らせ" breadcrumb={[{ href: "/news", label: "お知らせ" }]} />
+	<section class="section container">
+		<EntryList items={items} empty="お知らせはまだありません。" />
+		{
+			(cursor || nextCursor) && (
+				<nav class="actions" aria-label="ページ送り">
+					{cursor && <a href="/news" class="btn btn--ghost">最新に戻る</a>}
+					{nextCursor && (
+						<a href={`/news?cursor=${encodeURIComponent(nextCursor)}`} class="btn">
+							さらに見る <Arrow />
+						</a>
+					)}
+				</nav>
+			)
+		}
+	</section>
+</Base>

@@ -1,0 +1,107 @@
+---
+import { formatDate, isoDate } from "../lib/format";
+import Arrow from "./Arrow.astro";
+
+export interface EntryListItem {
+	href: string;
+	title: string;
+	date?: Date | null;
+	label?: string;
+	excerpt?: string | null;
+}
+
+interface Props {
+	items: EntryListItem[];
+	empty?: string;
+}
+
+const { items, empty = "まだ記事はありません。" } = Astro.props;
+---
+
+{
+	items.length === 0 ? (
+		<p class="muted entry-list__empty">{empty}</p>
+	) : (
+		<ul class="entry-list" role="list">
+			{items.map((item) => (
+				<li>
+					<a href={item.href} class="entry-list__row">
+						<span class="entry-list__meta">
+							{item.date && (
+								<time class="mono" datetime={isoDate(item.date)}>
+									{formatDate(item.date)}
+								</time>
+							)}
+							{item.label && <span class="caption">{item.label}</span>}
+						</span>
+						<span class="entry-list__body">
+							<span class="entry-list__title">{item.title}</span>
+							{item.excerpt && <span class="entry-list__excerpt muted">{item.excerpt}</span>}
+						</span>
+						<Arrow />
+					</a>
+				</li>
+			))}
+		</ul>
+	)
+}
+
+<style>
+	.entry-list {
+		padding: 0;
+		list-style: none;
+		border-top: 1px solid var(--color-hairline);
+	}
+
+	.entry-list__row {
+		display: grid;
+		grid-template-columns: 160px 1fr auto;
+		gap: 8px 24px;
+		align-items: baseline;
+		padding: 22px 0;
+		border-bottom: 1px solid var(--color-hairline);
+		transition: border-color 0.2s ease;
+	}
+
+	.entry-list__row:hover {
+		border-bottom-color: var(--color-frost);
+	}
+
+	.entry-list__meta {
+		display: flex;
+		gap: 12px;
+		align-items: baseline;
+		color: var(--color-ash);
+	}
+
+	.entry-list__body {
+		display: grid;
+		gap: 4px;
+	}
+
+	.entry-list__title {
+		font-size: 16px;
+		line-height: 1.7;
+	}
+
+	.entry-list__excerpt {
+		font-size: 13px;
+		line-height: 1.8;
+	}
+
+	.entry-list__empty {
+		padding: 22px 0;
+		border-top: 1px solid var(--color-hairline);
+		border-bottom: 1px solid var(--color-hairline);
+	}
+
+	@media (max-width: 640px) {
+		.entry-list__row {
+			grid-template-columns: 1fr auto;
+		}
+
+		.entry-list__meta {
+			grid-column: 1 / -1;
+		}
+	}
+</style>

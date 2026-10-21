@@ -1,0 +1,205 @@
+---
+import { getEmDashCollection, getTaxonomyTermsWithCacheHint } from "emdash";
+import { Image } from "emdash/ui";
+import { formatDate, isoDate } from "../lib/format";
+import Arrow from "./Arrow.astro";
+import PageHeader from "./PageHeader.astro";
+
+interface Props {
+	/** Category slug to filter by; omit for all posts. */
+	category?: { slug: string; label: string };
+}
+
+const { category } = Astro.props;
+const basePath = category ? `/blog/category/${category.slug}` : "/blog";
+const cursor = Astro.url.searchParams.get("cursor") ?? undefined;
+
+const [postsResult, termsResult] = await Promise.all([
+	getEmDashCollection("posts", {
+		orderBy: { published_at: "desc" },
+		limit: 12,
+		cursor,
+		...(category ? { where: { category: category.slug } } : {}),
+	}),
+	getTaxonomyTermsWithCacheHint("category", { includeCounts: true }),
+]);
+if (Astro.cache?.enabled) {
+	Astro.cache.set(postsResult.cacheHint);
+	Astro.cache.set(termsResult.cacheHint);
+}
+
+const posts = postsResult.entries;
+const terms = (termsResult.data ?? []).filter((term) => (term.count ?? 0) > 0);
+---
+
+<PageHeader
+	en={["Journal"]}
+	title={category ? `ブログ：${category.label}` : "ブログ"}
+	lead={category ? undefined : "AI活用、新規事業、起業について、現場で得た知見を発信しています。"}
+	breadcrumb={[
+		{ href: "/blog", label: "ブログ" },
+		...(category ? [{ href: basePath, label: category.label }] : []),
+	]}
+>
+	{
+		terms.length > 0 && (
+			<nav class="terms" aria-label="カテゴリー">
+				<a href="/blog" class="terms__link mono" aria-current={!category ? "page" : undefined}>
+					すべて
+				</a>
+				{terms.map((term) => (
+					<a
+						href={`/blog/category/${term.slug}`}
+						class="terms__link mono"
+						aria-current={category?.slug === term.slug ? "page" : undefined}
+					>
+						{term.label}
+					</a>
+				))}
+			</nav>
+		)
+	}
+</PageHeader>
+
+<section class="section container">
+	{
+		posts.length === 0 ? (
+			<p class="muted empty">ブログ記事は準備中です。</p>
+		) : (
+			<ul class="cards" role="list">
+				{posts.map((post) => (
+					<li>
+						<a href={`/blog/${post.id}`} class="card">
+							<div class="card__media">
+								{post.data.featured_image ? (
+									<Image image={post.data.featured_image} />
+								) : (
+									<span class="card__placeholder caption" aria-hidden="true">
+										motenas journal
+									</span>
+								)}
+							</div>
+							<div class="card__body">
+								{post.data.publishedAt && (
+									<time class="mono muted" datetime={isoDate(post.data.publishedAt)}>
+										{formatDate(post.data.publishedAt)}
+									</time>
+								)}
+								<h2 class="card__title">{post.data.title}</h2>
+								{post.data.excerpt && <p class="card__excerpt muted">{post.data.excerpt}</p>}
+							</div>
+						</a>
+					</li>
+				))}
+			</ul>
+		)
+	}
+	{
+		(cursor || postsResult.nextCursor) && (
+			<nav class="actions pager" aria-label="ページ送り">
+				{cursor && (
+					<a href={basePath} class="btn btn--ghost">
+						最新に戻る
+					</a>
+				)}
+				{postsResult.nextCursor && (
+					<a href={`${basePath}?cursor=${encodeURIComponent(postsResult.nextCursor)}`} class="btn">
+						さらに見る <Arrow />
+					</a>
+				)}
+			</nav>
+		)
+	}
+</section>
+
+<style>
+	.terms {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+		margin-top: 16px;
+	}
+
+	.terms__link {
+		padding: 8px 14px;
+		border: 1px solid var(--color-hairline-strong);
+		border-radius: var(--radius-sm);
+	}
+
+	.terms__link:hover,
+	.terms__link[aria-current="page"] {
+		border-color: var(--color-frost);
+		background: var(--color-charcoal);
+	}
+
+	.cards {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+		gap: 48px 20px;
+		padding: 0;
+		list-style: none;
+	}
+
+	.card {
+		display: grid;
+		gap: 20px;
+	}
+
+	.card__media {
+		aspect-ratio: 16 / 10;
+		overflow: hidden;
+		border: 1px solid var(--color-hairline);
+		border-radius: var(--radius-lg);
+		background: var(--color-void);
+	}
+
+	.card__media :global(img) {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		transition: transform 0.6s ease;
+	}
+
+	.card:hover .card__media :global(img) {
+		transform: scale(1.03);
+	}
+
+	.card__placeholder {
+		display: grid;
+		place-items: center;
+		height: 100%;
+		color: var(--color-ash);
+	}
+
+	.card__body {
+		display: grid;
+		gap: 8px;
+	}
+
+	.card__title {
+		font-size: 18px;
+		font-weight: 400;
+		line-height: 1.6;
+	}
+
+	.card:hover .card__title {
+		text-decoration: underline;
+		text-decoration-thickness: 1px;
+		text-underline-offset: 5px;
+	}
+
+	.card__excerpt {
+		font-size: 13px;
+		line-height: 1.8;
+	}
+
+	.empty {
+		padding: 22px 0;
+		border-top: 1px solid var(--color-hairline);
+		border-bottom: 1px solid var(--color-hairline);
+	}
+
+	.pager {
+		margin-top: 56px;
+	}
+</style>

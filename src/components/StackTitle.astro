@@ -1,0 +1,18 @@
+---
+/**
+ * Stacked display title with the underline mark under each line.
+ * Display type is set in Latin only: CJK glyphs need far more leading than
+ * the 0.78 line-height the stacked mark depends on.
+ */
+interface Props {
+	lines: string[];
+	as?: "h1" | "h2" | "p" | "div";
+	class?: string;
+}
+
+const { lines, as: Tag = "div", class: className } = Astro.props;
+---
+
+<Tag class:list={["stack-title", className]} lang="en">
+	{lines.map((line) => <span class="stack-title__line">{line}</span>)}
+</Tag>

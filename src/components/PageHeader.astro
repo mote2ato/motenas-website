@@ -1,0 +1,64 @@
+---
+import StackTitle from "./StackTitle.astro";
+
+interface Props {
+	/** Latin display title lines. */
+	en: string[];
+	/** The page's Japanese title (the h1). */
+	title: string;
+	lead?: string | null;
+	/** Spread from entry.edit for click-to-edit in the admin. */
+	titleEdit?: Record<string, unknown>;
+	leadEdit?: Record<string, unknown>;
+	breadcrumb?: { href: string; label: string }[];
+}
+
+const { en, title, lead, titleEdit = {}, leadEdit = {}, breadcrumb = [] } = Astro.props;
+---
+
+<header class="page-header container">
+	<nav class="page-header__crumbs caption" aria-label="パンくずリスト">
+		<a href="/">Home</a>
+		{
+			breadcrumb.map((crumb) => (
+				<>
+					<span aria-hidden="true">/</span>
+					<a href={crumb.href}>{crumb.label}</a>
+				</>
+			))
+		}
+	</nav>
+	<StackTitle lines={en} />
+	<h1 class="heading page-header__title" {...titleEdit}>{title}</h1>
+	{lead && <p class="lead page-header__lead measure" {...leadEdit}>{lead}</p>}
+	<slot />
+</header>
+
+<style>
+	.page-header {
+		display: grid;
+		gap: 24px;
+		padding-top: clamp(64px, 10vw, 140px);
+		padding-bottom: clamp(48px, 7vw, 96px);
+	}
+
+	.page-header__crumbs {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+		margin-bottom: clamp(16px, 3vw, 40px);
+		color: var(--color-ash);
+	}
+
+	.page-header__crumbs a:hover {
+		color: var(--color-bone);
+	}
+
+	.page-header__title {
+		margin-top: 8px;
+	}
+
+	.page-header__lead {
+		margin-top: -4px;
+	}
+</style>

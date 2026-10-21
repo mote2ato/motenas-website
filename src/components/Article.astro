@@ -1,0 +1,131 @@
+---
+import type { ContentEntry } from "emdash";
+import { Image, PortableText } from "emdash/ui";
+import { formatDate, isoDate } from "../lib/format";
+import Arrow from "./Arrow.astro";
+
+interface Props {
+	entry: ContentEntry<{
+		id: string;
+		title: string;
+		content?: unknown[] | null;
+		featured_image?: { id: string; src?: string; alt?: string } | null;
+		publishedAt: Date | null;
+		updatedAt: Date;
+	}>;
+	section: { href: string; label: string; en: string };
+	terms?: { slug: string; label: string }[];
+}
+
+const { entry, section, terms = [] } = Astro.props;
+const published = entry.data.publishedAt;
+const updated = entry.data.updatedAt;
+const showUpdated =
+	published && updated && formatDate(updated) !== formatDate(published) && updated > published;
+---
+
+<article class="article">
+	<header class="article__header container">
+		<nav class="caption article__crumbs" aria-label="パンくずリスト">
+			<a href="/">Home</a>
+			<span aria-hidden="true">/</span>
+			<a href={section.href}>{section.en}</a>
+		</nav>
+		<div class="article__meta mono">
+			{published && <time datetime={isoDate(published)}>{formatDate(published)}</time>}
+			{showUpdated && <span class="muted">更新 {formatDate(updated)}</span>}
+			{
+				terms.map((term) => (
+					<a href={`/blog/category/${term.slug}`} class="article__term">
+						{term.label}
+					</a>
+				))
+			}
+		</div>
+		<h1 class="article__title" {...entry.edit.title}>{entry.data.title}</h1>
+	</header>
+
+	{
+		entry.data.featured_image && (
+			<div class="article__image container" {...entry.edit.featured_image}>
+				<Image image={entry.data.featured_image} />
+			</div>
+		)
+	}
+
+	<div class="container article__body">
+		<div class="prose" {...entry.edit.content}>
+			<PortableText value={entry.data.content ?? []} />
+		</div>
+	</div>
+
+	<footer class="container article__footer">
+		<a href={section.href} class="text-link">{section.label}一覧へ <Arrow /></a>
+	</footer>
+</article>
+
+<style>
+	.article__header {
+		display: grid;
+		gap: 24px;
+		padding-top: clamp(64px, 10vw, 140px);
+		padding-bottom: clamp(32px, 5vw, 64px);
+		border-bottom: 1px solid var(--color-hairline);
+	}
+
+	.article__crumbs {
+		display: flex;
+		gap: 8px;
+		color: var(--color-ash);
+	}
+
+	.article__meta {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px 20px;
+		align-items: center;
+	}
+
+	.article__term {
+		padding: 4px 10px;
+		border: 1px solid var(--color-hairline-strong);
+		border-radius: var(--radius-sm);
+		font-size: var(--text-caption);
+	}
+
+	.article__term:hover {
+		border-color: var(--color-frost);
+	}
+
+	.article__title {
+		max-width: 28em;
+		font-size: clamp(24px, 3.6vw, 36px);
+		font-weight: 400;
+		line-height: 1.5;
+		letter-spacing: 0.02em;
+	}
+
+	.article__image {
+		padding-top: clamp(32px, 5vw, 56px);
+	}
+
+	.article__image :global(img) {
+		width: 100%;
+		max-height: 70vh;
+		object-fit: cover;
+		border-radius: var(--radius-lg);
+	}
+
+	.article__body {
+		padding-block: clamp(40px, 6vw, 72px);
+	}
+
+	.article__body .prose {
+		margin-inline: auto;
+	}
+
+	.article__footer {
+		padding-block: 32px 96px;
+		border-top: 1px solid var(--color-hairline);
+	}
+</style>

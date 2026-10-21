@@ -1,0 +1,175 @@
+---
+import { getEmDashCollection } from "emdash";
+import { PortableText } from "emdash/ui";
+import Arrow from "../components/Arrow.astro";
+import PageHeader from "../components/PageHeader.astro";
+import Base from "../layouts/Base.astro";
+import { loadPage } from "../lib/page";
+
+const [result, servicesResult] = await Promise.all([
+	loadPage(Astro, "service"),
+	getEmDashCollection("services", { orderBy: { sort_order: "asc" }, limit: 12 }),
+]);
+if (Astro.cache?.enabled) Astro.cache.set(servicesResult.cacheHint);
+
+const page = result?.page;
+const seo = result?.seo;
+const services = servicesResult.entries;
+---
+
+<Base
+	title={seo?.title ?? "事業内容"}
+	pageTitle={page?.data.title ?? "事業内容"}
+	description={seo?.description}
+	image={seo?.ogImage}
+	canonical={seo?.canonical}
+	robots={seo?.robots}
+	content={page ? { collection: "pages", id: page.data.id, slug: page.id } : undefined}
+>
+	<PageHeader
+		en={["Service"]}
+		title={page?.data.title ?? "事業内容"}
+		lead={page?.data.lead}
+		titleEdit={page?.edit.title}
+		leadEdit={page?.edit.lead}
+		breadcrumb={[{ href: "/service", label: page?.data.title ?? "事業内容" }]}
+	>
+		{
+			services.length > 0 && (
+				<ol class="toc" role="list">
+					{services.map((service, i) => (
+						<li>
+							<a href={`#${service.id}`} class="text-link">
+								{String(i + 1).padStart(2, "0")} {service.data.title}
+							</a>
+						</li>
+					))}
+				</ol>
+			)
+		}
+	</PageHeader>
+
+	{
+		services.map((service, i) => (
+			<section id={service.id} class="section container service" aria-labelledby={`${service.id}-title`}>
+				<div class="service__head">
+					<p class="caption">
+						{String(i + 1).padStart(2, "0")} {service.data.title_en}
+					</p>
+					<h2 id={`${service.id}-title`} class="heading" {...service.edit.title}>
+						{service.data.title}
+					</h2>
+				</div>
+				<div class="service__body">
+					<p class="lead" {...service.edit.summary}>
+						{service.data.summary}
+					</p>
+
+					{service.data.items && service.data.items.length > 0 && (
+						<div class="service__group">
+							<h3 class="caption">サービス内容</h3>
+							<dl class="service__list" {...service.edit.items}>
+								{service.data.items.map((item) => (
+									<div class="service__row">
+										<dt>{item.name}</dt>
+										{item.description && <dd class="muted">{item.description}</dd>}
+									</div>
+								))}
+							</dl>
+						</div>
+					)}
+
+					{service.data.outcomes && service.data.outcomes.length > 0 && (
+						<div class="service__group">
+							<h3 class="caption">期待できる効果</h3>
+							<dl class="service__list" {...service.edit.outcomes}>
+								{service.data.outcomes.map((item) => (
+									<div class="service__row">
+										<dt>{item.name}</dt>
+										{item.description && <dd class="muted">{item.description}</dd>}
+									</div>
+								))}
+							</dl>
+						</div>
+					)}
+				</div>
+			</section>
+		))
+	}
+
+	<section class="section container closing">
+		{
+			page?.data.content && page.data.content.length > 0 && (
+				<div class="prose" {...page.edit.content}>
+					<PortableText value={page.data.content} />
+				</div>
+			)
+		}
+		<div class="actions">
+			<a href="/contact" class="btn">お問い合わせ <Arrow /></a>
+		</div>
+	</section>
+</Base>
+
+<style>
+	.toc {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 12px 28px;
+		margin-top: 16px;
+		padding: 0;
+		list-style: none;
+	}
+
+	.service {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr);
+		gap: 32px 64px;
+	}
+
+	.service__head {
+		display: grid;
+		align-content: start;
+		gap: 16px;
+	}
+
+	.service__body {
+		display: grid;
+		gap: 48px;
+	}
+
+	.service__group {
+		display: grid;
+		gap: 16px;
+	}
+
+	.service__list {
+		border-top: 1px solid var(--color-hairline);
+	}
+
+	.service__row {
+		display: grid;
+		gap: 4px;
+		padding: 20px 0;
+		border-bottom: 1px solid var(--color-hairline);
+	}
+
+	.service__row dt {
+		font-size: 16px;
+	}
+
+	.service__row dd {
+		font-size: 14px;
+	}
+
+	@media (max-width: 860px) {
+		.service {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	.closing {
+		display: grid;
+		gap: 16px;
+	}
+</style>
