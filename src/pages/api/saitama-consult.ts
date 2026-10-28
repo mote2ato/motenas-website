@@ -5,7 +5,7 @@ import {verifyTurnstile} from '../../lib/contact';
 type Config={RESEND_API_KEY?:string;CONTACT_FROM?:string;CONTACT_TO?:string;TURNSTILE_SITE_KEY?:string;TURNSTILE_SECRET_KEY?:string};
 const response=(origin:string,body:unknown,status=200)=>new Response(JSON.stringify(body),{status,headers:{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store','Vary':'Origin',...(ALLOWED_ORIGINS.has(origin)?{'Access-Control-Allow-Origin':origin,'Access-Control-Allow-Methods':'GET, POST, OPTIONS','Access-Control-Allow-Headers':'Content-Type, Accept'}:{})}});
 export const OPTIONS:APIRoute=({request})=>{const origin=request.headers.get('origin')||'';return response(origin,{},ALLOWED_ORIGINS.has(origin)?200:403);};
-export const GET:APIRoute=({request})=>{const origin=request.headers.get('origin')||'';if(!ALLOWED_ORIGINS.has(origin))return response(origin,{message:'このページからは送信できません。'},403);const config=env as unknown as Config;return response(origin,{turnstileSiteKey:config.TURNSTILE_SITE_KEY&&config.TURNSTILE_SECRET_KEY?config.TURNSTILE_SITE_KEY:null});};
+export const GET:APIRoute=({request})=>{const origin=request.headers.get('origin')||'';if(!ALLOWED_ORIGINS.has(origin))return response(origin,{message:'このページからは送信できません。'},403);const config=env as unknown as Config;return response(origin,{deliveryConfigured:Boolean(config.RESEND_API_KEY&&config.CONTACT_TO&&config.CONTACT_FROM),turnstileSiteKey:config.TURNSTILE_SITE_KEY&&config.TURNSTILE_SECRET_KEY?config.TURNSTILE_SITE_KEY:null});};
 export const POST:APIRoute=async({request})=>{
  const origin=request.headers.get('origin')||'';
  if(!ALLOWED_ORIGINS.has(origin))return response(origin,{status:'invalid',message:'このページからは送信できません。'},403);
