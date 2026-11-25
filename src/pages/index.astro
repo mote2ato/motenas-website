@@ -236,18 +236,21 @@ const jsonLd = {
 		<div class="faq">
 			{
 				faqs.map((faq) => (
-					<div class="faq__row">
-						<h3 class="faq__question">{faq.question}</h3>
+					<details class="faq__row">
+						<summary class="faq__summary">
+							<h3 class="faq__question">{faq.question}</h3>
+							<span class="faq__toggle" aria-hidden="true">+</span>
+						</summary>
 						<p class="faq__answer muted">{faq.answer}</p>
-					</div>
+					</details>
 				))
 			}
 		</div>
 	</section>
 
 	<!-- Summary -->
-	<section class="section container" aria-label="まとめ">
-		<SectionHead index="06" en={["Summary"]} ja="まとめ" />
+	<section class="section container section--summary" aria-label="まとめ">
+		<p class="caption summary__head">06 Summary ― まとめ</p>
 		<div class="summary">
 			<p class="summary__text">
 				株式会社もてなすとは、さいたま市大宮区を拠点とするマーケティングコンサルティング会社です。中小企業とひとり起業家の、AI導入と事業づくりを支援します。
@@ -329,26 +332,36 @@ const jsonLd = {
 		}
 	}
 
+	.section--summary {
+		padding-top: 8px;
+	}
+
+	.summary__head {
+		margin-bottom: 20px;
+	}
+
 	.summary {
 		display: grid;
-		gap: 20px;
+		gap: 12px;
 		max-width: 46em;
+		color: var(--color-ash);
 	}
 
 	.summary__text {
-		line-height: 1.9;
+		font-size: 13px;
+		line-height: 1.85;
 	}
 
 	.summary__list {
 		display: grid;
-		gap: 10px;
+		gap: 6px;
 		padding: 0;
 		list-style: none;
 	}
 
 	.summary__list li {
-		font-size: 14px;
-		line-height: 1.9;
+		font-size: 12.5px;
+		line-height: 1.85;
 		padding-left: 1.2em;
 		text-indent: -1.2em;
 	}
@@ -362,10 +375,21 @@ const jsonLd = {
 	}
 
 	.faq__row {
-		display: grid;
-		gap: 8px;
 		padding: 28px 0;
 		border-bottom: 1px solid var(--color-hairline);
+	}
+
+	.faq__summary {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 16px;
+		cursor: pointer;
+		list-style: none;
+	}
+
+	.faq__summary::-webkit-details-marker {
+		display: none;
 	}
 
 	.faq__question {
@@ -373,10 +397,29 @@ const jsonLd = {
 		font-weight: 600;
 	}
 
+	.faq__toggle {
+		font-size: 20px;
+		font-weight: 300;
+		line-height: 1;
+		color: var(--color-ash);
+		transition: transform 0.2s ease;
+	}
+
+	.faq__row[open ] .faq__toggle {
+		transform: rotate(45deg);
+	}
+
 	.faq__answer {
 		font-size: 14px;
 		line-height: 1.9;
 		max-width: 46em;
+		margin-top: 10px;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.faq__toggle {
+			transition: none;
+		}
 	}
 
 	.services {
