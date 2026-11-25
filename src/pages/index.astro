@@ -69,6 +69,17 @@ const faqJsonLd = {
 	})),
 };
 
+const webPageJsonLd = {
+	"@context": "https://schema.org",
+	"@type": "WebPage",
+	name: "さいたま市のAI導入支援・起業コンサルティング｜株式会社もてなす",
+	url: new URL("/", Astro.url.origin).href,
+	datePublished: "2026-10-22",
+	dateModified: "2026-11-25",
+	inLanguage: "ja",
+	isPartOf: { "@type": "WebSite", url: Astro.url.origin },
+};
+
 const jsonLd = {
 	"@context": "https://schema.org",
 	"@type": "Organization",
@@ -91,6 +102,7 @@ const jsonLd = {
 <Base overlayHeader title="さいたま市のAI導入支援・起業コンサルティング｜株式会社もてなす" description="中小企業・ひとり起業家のための、実装できるAIとコンセプト。AI導入支援、起業コンサルティング、新規事業向けデザインの株式会社もてなす。">
 	<script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 	<script is:inline type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+	<script is:inline type="application/ld+json" set:html={JSON.stringify(webPageJsonLd)} />
 
 	<!-- Hero -->
 	<section class="art hero" aria-labelledby="hero-title">
@@ -233,9 +245,29 @@ const jsonLd = {
 		</div>
 	</section>
 
+	<!-- Summary -->
+	<section class="section container" aria-label="まとめ">
+		<SectionHead index="06" en={["Summary"]} ja="まとめ" />
+		<div class="summary">
+			<p class="summary__text">
+				株式会社もてなすとは、さいたま市大宮区を拠点とするマーケティングコンサルティング会社です。中小企業とひとり起業家の、AI導入と事業づくりを支援します。
+			</p>
+			<p class="summary__text">
+				AI導入支援とは、業務の分析からAIツールの選定と導入、定着までを一貫して支援するサービスです。起業コンサルティングとは、アイデアの具体化から事業計画、資金調達、マーケティング戦略までを支える支援です。
+			</p>
+			<ul class="summary__list" role="list">
+				<li>起業コンサルティング：アイデアの具体化、事業計画の策定、資金調達、マーケティング戦略の立案を支援します。</li>
+				<li>AI導入支援：業務の分析と課題の特定、AIツールの選定と導入、定着化と改善提案を行います。</li>
+				<li>デザイン：ロゴとブランディング、名刺などのプリント物、ホームページとランディングページを制作します。</li>
+				<li>自社メディア：「AI時代のイラスト×マーケ研究室」と「ヨッパライ企画」を運営しています。</li>
+				<li>無料相談を実施中です。AI導入や起業の進め方に迷ったら、お気軽にお問い合わせください。</li>
+			</ul>
+		</div>
+	</section>
+
 	<!-- Contact -->
 	<section class="section container cta" aria-labelledby="cta-title">
-		<p class="caption">06 Contact</p>
+		<p class="caption">07 Contact</p>
 		<StackTitle lines={["Let's build", "it together."]} />
 		<h2 id="cta-title" class="heading">AIで未来を創る、あなたのビジネスパートナー</h2>
 		<p class="lead measure">
@@ -296,6 +328,34 @@ const jsonLd = {
 		.hero__scroll {
 			display: none;
 		}
+	}
+
+	.summary {
+		display: grid;
+		gap: 20px;
+		max-width: 46em;
+	}
+
+	.summary__text {
+		line-height: 1.9;
+	}
+
+	.summary__list {
+		display: grid;
+		gap: 10px;
+		padding: 0;
+		list-style: none;
+	}
+
+	.summary__list li {
+		font-size: 14px;
+		line-height: 1.9;
+		padding-left: 1.2em;
+		text-indent: -1.2em;
+	}
+
+	.summary__list li::before {
+		content: "・";
 	}
 
 	.faq {
