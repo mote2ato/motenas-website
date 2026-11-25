@@ -249,30 +249,11 @@ services = [
         },
     },
     {
-        "id": "service-coaching", "slug": "motivation-coaching", "status": "published",
-        "data": {
-            "title": "モチベーション形成コーチング",
-            "title_en": "Motivation Coaching",
-            "sort_order": 2,
-            "summary": "個人や組織のモチベーション向上を専門としたコーチングサービスを提供します。目標達成や自己実現に向けて、内なる意欲を引き出し、持続的なやる気をサポートします。",
-            "items": [
-                {"name": "自己分析と目標設定", "description": "クライアントの価値観や強みを明確にし、達成可能な目標を共に設定します。"},
-                {"name": "モチベーション維持の技術提供", "description": "日常生活や業務において、モチベーションを高め、維持するための具体的な方法やツールを提供します。"},
-                {"name": "定期的なフィードバックと調整", "description": "進捗状況を定期的に確認し、必要に応じてアプローチの修正や新たな目標設定を行います。"},
-            ],
-            "outcomes": [
-                {"name": "生産性の向上", "description": "高いモチベーションを維持することで、業務効率や成果が向上します。"},
-                {"name": "自己成長の促進", "description": "内なる意欲を引き出すことで、継続的な自己成長が可能となります。"},
-                {"name": "組織全体の活性化", "description": "個々のモチベーション向上が、チームや組織全体の活力につながります。"},
-            ],
-        },
-    },
-    {
         "id": "service-ai", "slug": "ai-adoption", "status": "published",
         "data": {
             "title": "AI導入支援サービス",
             "title_en": "AI Adoption",
-            "sort_order": 3,
+            "sort_order": 2,
             "summary": "企業の業務効率化や新規事業開発に向け、AI技術の導入を総合的にサポートします。",
             "items": [
                 {"name": "AI活用コンサルティング", "description": "業務課題の分析から、最適なAIソリューションの提案までを行います。"},
@@ -286,7 +267,7 @@ services = [
         "data": {
             "title": "起業・新規事業向けデザイン業務",
             "title_en": "Design",
-            "sort_order": 4,
+            "sort_order": 3,
             "summary": "起業や新規事業に必要なデザイン業務を提供します。ロゴ、名刺、ホームページ、ランディングページなど、業務始動時に必要なビジュアル要素を設計し、実現します。",
             "items": [
                 {"name": "ロゴ設計、ブランディング", "description": "企業やプロジェクトのブランドアイデンティティを初歩から構築します。"},
@@ -301,7 +282,7 @@ services = [
             "title": "AI時代のイラスト×マーケ研究室",
             "title_en": "Illustration Marketing Lab",
             "url": AIMSLAB_URL,
-            "sort_order": 5,
+            "sort_order": 4,
             "summary": "イラストレーター向けのマーケティング研究・発信メディアです。noteで、AI時代でも選ばれて収益を安定させるための考え方と実践を発信しています。メンバーシップ「イラストマーケ実践コミュニティ」と、公式LINEで配布する「イラストレータータイプ診断」も運営しています。",
             "items": [
                 {"name": "noteでの発信", "description": "駆け出しから中堅のイラストレーターに向け、集客、価格設定、発信の続け方など、作品を仕事につなげるための記事を届けます。"},
@@ -316,7 +297,7 @@ services = [
             "title": "ヨッパライ企画",
             "title_en": "Yopparai Kikaku",
             "url": YOPPARAI_URL,
-            "sort_order": 6,
+            "sort_order": 5,
             "summary": "全国の酒場を紹介するWebメディアです。大衆酒場、立ち飲み、せんべろ、横丁、角打ちなどの店舗情報を集め、今夜の一軒を探す手助けをします。飲み歩きクリエイターと連携した紹介も行っています。",
             "items": [
                 {"name": "酒場ガイド", "description": "エリアやジャンルから探せる店舗情報を掲載しています。営業時間や予算の目安など、店選びに必要な情報をそろえます。"},
