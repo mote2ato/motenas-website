@@ -15,6 +15,12 @@ if (Astro.cache?.enabled) Astro.cache.set(servicesResult.cacheHint);
 const page = result?.page;
 const seo = result?.seo;
 const services = servicesResult.entries;
+
+// 自社メディア2件は、公式サイトのトップページのサムネイルを添える。
+const serviceThumbs: Record<string, { src: string; alt: string }> = {
+	aimslab: { src: "/images/services/aimslab.jpg", alt: "AI時代のイラスト×マーケ研究室（note）のトップページ" },
+	"yopparai-kikaku": { src: "/images/services/yopparai-kikaku.jpg", alt: "ヨッパライ企画のトップページ" },
+};
 ---
 
 <Base
@@ -61,6 +67,20 @@ const services = servicesResult.entries;
 					</h2>
 				</div>
 				<div class="service__body">
+					{serviceThumbs[service.id] && (
+						<figure class="service__thumb">
+							<a href={service.data.url ? sanitizeHref(service.data.url) : undefined} target="_blank" rel="noopener noreferrer">
+								<img
+									src={serviceThumbs[service.id].src}
+									alt={serviceThumbs[service.id].alt}
+									width="1200"
+									height="799"
+									loading="lazy"
+								/>
+							</a>
+						</figure>
+					)}
+
 					<p class="lead" {...service.edit.summary}>
 						{service.data.summary}
 					</p>
@@ -144,6 +164,17 @@ const services = servicesResult.entries;
 	.service__body {
 		display: grid;
 		gap: 48px;
+	}
+
+	.service__thumb {
+		margin: 0;
+	}
+
+	.service__thumb img {
+		display: block;
+		width: 100%;
+		height: auto;
+		border: 1px solid var(--color-hairline);
 	}
 
 	.service__group {
