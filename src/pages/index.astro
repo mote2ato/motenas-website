@@ -31,6 +31,44 @@ const posts = postsResult.entries.map((entry) => ({
 	date: entry.data.publishedAt,
 }));
 
+const faqs = [
+	{
+		question: "無料相談では、どのようなことが相談できますか？",
+		answer:
+			"AIの導入、起業や新規事業の立ち上げ、デザインに関するご相談を承っています。現状の課題をお聞きし、進め方の方向性をお示しします。相談は無料です。",
+	},
+	{
+		question: "AI導入支援では、どこまで対応してもらえますか？",
+		answer:
+			"業務の分析と課題の特定、AIツールの選定と導入、定着化のためのトレーニング、継続的な改善提案まで、導入の全工程を支援します。",
+	},
+	{
+		question: "起業や新規事業の相談もできますか？",
+		answer:
+			"はい。ビジネスアイデアの具体化から事業計画の策定、資金調達、マーケティング戦略の立案まで、総合的にサポートします。",
+	},
+	{
+		question: "デザインだけの依頼もできますか？",
+		answer:
+			"はい。ロゴ設計やブランディング、名刺などのプリント物、ホームページやランディングページのデザインに対応しています。",
+	},
+	{
+		question: "イラストレーター向けの支援も行っていますか？",
+		answer:
+			"はい。自社メディア「AI時代のイラスト×マーケ研究室」で発信を行うほか、メンバーシップ「イラストマーケ実践コミュニティ」と、公式LINEの無料診断「イラストレータータイプ診断」を運営しています。",
+	},
+];
+
+const faqJsonLd = {
+	"@context": "https://schema.org",
+	"@type": "FAQPage",
+	mainEntity: faqs.map((faq) => ({
+		"@type": "Question",
+		name: faq.question,
+		acceptedAnswer: { "@type": "Answer", text: faq.answer },
+	})),
+};
+
 const jsonLd = {
 	"@context": "https://schema.org",
 	"@type": "Organization",
@@ -50,8 +88,9 @@ const jsonLd = {
 };
 ---
 
-<Base overlayHeader description="中小企業・ひとり起業家のための、実装できるAIとコンセプト。AI導入支援、起業コンサルティング、新規事業向けデザインの株式会社もてなす。">
+<Base overlayHeader title="さいたま市のAI導入支援・起業コンサルティング｜株式会社もてなす" description="中小企業・ひとり起業家のための、実装できるAIとコンセプト。AI導入支援、起業コンサルティング、新規事業向けデザインの株式会社もてなす。">
 	<script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+	<script is:inline type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
 
 	<!-- Hero -->
 	<section class="art hero" aria-labelledby="hero-title">
@@ -63,7 +102,7 @@ const jsonLd = {
 			/>
 			<img
 				src="/images/a001-1900.jpg"
-				alt=""
+				alt="光るネットワーク模様のボードを手に持つ女性のイラスト"
 				class="art__img hero__img"
 				width="1900"
 				height="600"
@@ -130,7 +169,7 @@ const jsonLd = {
 				/>
 				<img
 					src="/images/a002-1900.jpg"
-					alt=""
+					alt="色とりどりに光るデータの可視化へ手を伸ばすイラスト"
 					class="art__img philosophy__img"
 					width="1900"
 					height="600"
@@ -175,13 +214,28 @@ const jsonLd = {
 				srcset="/images/a003-960.webp 960w, /images/a003-1900.webp 1900w"
 				sizes="100vw"
 			/>
-			<img src="/images/a003-1900.jpg" alt="" class="art__img band__img" width="1900" height="600" loading="lazy" />
+			<img src="/images/a003-1900.jpg" alt="デジタルの粒子へ溶けていく女性の横顔のイラスト" class="art__img band__img" width="1900" height="600" loading="lazy" />
 		</picture>
 	</div>
 
+	<!-- FAQ -->
+	<section class="section container" aria-label="よくある質問">
+		<SectionHead index="05" en={["FAQ"]} ja="よくある質問" />
+		<div class="faq">
+			{
+				faqs.map((faq) => (
+					<div class="faq__row">
+						<h3 class="faq__question">{faq.question}</h3>
+						<p class="faq__answer muted">{faq.answer}</p>
+					</div>
+				))
+			}
+		</div>
+	</section>
+
 	<!-- Contact -->
 	<section class="section container cta" aria-labelledby="cta-title">
-		<p class="caption">05 Contact</p>
+		<p class="caption">06 Contact</p>
 		<StackTitle lines={["Let's build", "it together."]} />
 		<h2 id="cta-title" class="heading">AIで未来を創る、あなたのビジネスパートナー</h2>
 		<p class="lead measure">
@@ -242,6 +296,28 @@ const jsonLd = {
 		.hero__scroll {
 			display: none;
 		}
+	}
+
+	.faq {
+		border-top: 1px solid var(--color-hairline);
+	}
+
+	.faq__row {
+		display: grid;
+		gap: 8px;
+		padding: 28px 0;
+		border-bottom: 1px solid var(--color-hairline);
+	}
+
+	.faq__question {
+		font-size: 17px;
+		font-weight: 600;
+	}
+
+	.faq__answer {
+		font-size: 14px;
+		line-height: 1.9;
+		max-width: 46em;
 	}
 
 	.services {
