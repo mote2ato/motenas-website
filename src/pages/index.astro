@@ -1,5 +1,5 @@
 ---
-import { getEmDashCollection } from "emdash";
+import { getEmDashCollection, sanitizeHref } from "emdash";
 import Arrow from "../components/Arrow.astro";
 import EntryList from "../components/EntryList.astro";
 import SectionHead from "../components/SectionHead.astro";
@@ -96,7 +96,11 @@ const jsonLd = {
 			{
 				services.map((service, i) => (
 					<li class="services__item">
-						<a href={`/service#${service.id}`} class="services__link">
+						<a
+							href={service.data.url ? sanitizeHref(service.data.url) : `/service#${service.id}`}
+							class="services__link"
+							{...(service.data.url ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+						>
 							<span class="caption services__index">{String(i + 1).padStart(2, "0")}</span>
 							<span class="services__name">
 								<span class="heading-sm">{service.data.title}</span>
@@ -107,7 +111,7 @@ const jsonLd = {
 								)}
 							</span>
 							<span class="services__summary muted">{service.data.summary}</span>
-							<Arrow />
+							<Arrow direction={service.data.url ? "up-right" : "right"} />
 						</a>
 					</li>
 				))

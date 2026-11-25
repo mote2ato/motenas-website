@@ -98,6 +98,11 @@
 					"type": "string"
 				},
 				{
+					"slug": "url",
+					"label": "公式サイトURL",
+					"type": "url"
+				},
+				{
 					"slug": "sort_order",
 					"label": "表示順（小さい順）",
 					"type": "integer",
@@ -588,15 +593,67 @@
 						}
 					]
 				}
+			},
+			{
+				"id": "service-aimslab",
+				"slug": "aimslab",
+				"status": "published",
+				"data": {
+					"title": "AI時代のイラスト×マーケ研究室",
+					"title_en": "Illustration Marketing Lab",
+					"url": "https://note.com/aimslab",
+					"sort_order": 5,
+					"summary": "イラストレーター向けのマーケティング研究・発信メディアです。noteで、AI時代でも選ばれて収益を安定させるための考え方と実践を発信しています。メンバーシップ「イラストマーケ実践コミュニティ」と、公式LINEで配布する「イラストレータータイプ診断」も運営しています。",
+					"items": [
+						{
+							"name": "noteでの発信",
+							"description": "駆け出しから中堅のイラストレーターに向け、集客、価格設定、発信の続け方など、作品を仕事につなげるための記事を届けます。"
+						},
+						{
+							"name": "イラストマーケ実践コミュニティ",
+							"description": "noteメンバーシップのコミュニティです。学びを実践に移すための交流と相談の場を提供します。"
+						},
+						{
+							"name": "イラストレータータイプ診断",
+							"description": "公式LINEで配布する無料診断です。自分のタイプを知り、次に取るべき行動を明確にします。"
+						}
+					]
+				}
+			},
+			{
+				"id": "service-yopparai",
+				"slug": "yopparai-kikaku",
+				"status": "published",
+				"data": {
+					"title": "ヨッパライ企画",
+					"title_en": "Yopparai Kikaku",
+					"url": "https://yopparai-kikaku.com/",
+					"sort_order": 6,
+					"summary": "全国の酒場を紹介するWebメディアです。大衆酒場、立ち飲み、せんべろ、横丁、角打ちなどの店舗情報を集め、今夜の一軒を探す手助けをします。飲み歩きクリエイターと連携した紹介も行っています。",
+					"items": [
+						{
+							"name": "酒場ガイド",
+							"description": "エリアやジャンルから探せる店舗情報を掲載しています。営業時間や予算の目安など、店選びに必要な情報をそろえます。"
+						},
+						{
+							"name": "公認クリエイター紹介",
+							"description": "飲み歩きを発信するクリエイターと連携し、現地の様子が伝わる写真とともに店舗を紹介します。"
+						},
+						{
+							"name": "SNSでの発信",
+							"description": "Instagramなどでおすすめの店舗を定期的に紹介しています。"
+						}
+					]
+				}
 			}
 		],
 		"news": [
 			{
-				"id": "news-renewal",
-				"slug": "website-renewal",
+				"id": "news-services-media",
+				"slug": "services-media-added",
 				"status": "published",
 				"data": {
-					"title": "WEBサイトをリニューアルしました",
+					"title": "事業内容に「AI時代のイラスト×マーケ研究室」と「ヨッパライ企画」を追加しました",
 					"content": [
 						{
 							"_type": "block",
@@ -607,19 +664,124 @@
 								{
 									"_type": "span",
 									"_key": "k0014",
+									"text": "このたび、株式会社もてなすの事業内容に、当社が運営する2つのメディアを追加しました。"
+								}
+							]
+						},
+						{
+							"_type": "block",
+							"_key": "k0022",
+							"style": "normal",
+							"markDefs": [
+								{
+									"_type": "link",
+									"_key": "k0016",
+									"href": "https://note.com/aimslab"
+								},
+								{
+									"_type": "link",
+									"_key": "k0019",
+									"href": "https://yopparai-kikaku.com/"
+								}
+							],
+							"children": [
+								{
+									"_type": "span",
+									"_key": "k0015",
+									"text": "「"
+								},
+								{
+									"_type": "span",
+									"_key": "k0017",
+									"text": "AI時代のイラスト×マーケ研究室",
+									"marks": [
+										"k0016"
+									]
+								},
+								{
+									"_type": "span",
+									"_key": "k0018",
+									"text": "」は、イラストレーター向けにマーケティングの研究と実践を発信するnoteです。「"
+								},
+								{
+									"_type": "span",
+									"_key": "k0020",
+									"text": "ヨッパライ企画",
+									"marks": [
+										"k0019"
+									]
+								},
+								{
+									"_type": "span",
+									"_key": "k0021",
+									"text": "」は、全国の酒場を紹介するWebメディアです。"
+								}
+							]
+						},
+						{
+							"_type": "block",
+							"_key": "k0027",
+							"style": "normal",
+							"markDefs": [
+								{
+									"_type": "link",
+									"_key": "k0024",
+									"href": "/service"
+								}
+							],
+							"children": [
+								{
+									"_type": "span",
+									"_key": "k0023",
+									"text": "どちらも"
+								},
+								{
+									"_type": "span",
+									"_key": "k0025",
+									"text": "事業内容のページ",
+									"marks": [
+										"k0024"
+									]
+								},
+								{
+									"_type": "span",
+									"_key": "k0026",
+									"text": "からご覧いただけます。引き続きよろしくお願いいたします。"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "news-renewal",
+				"slug": "website-renewal",
+				"status": "published",
+				"data": {
+					"title": "WEBサイトをリニューアルしました",
+					"content": [
+						{
+							"_type": "block",
+							"_key": "k0028",
+							"style": "normal",
+							"markDefs": [],
+							"children": [
+								{
+									"_type": "span",
+									"_key": "k0029",
 									"text": "このたび、株式会社もてなすのWEBサイトをリニューアルしました。"
 								}
 							]
 						},
 						{
 							"_type": "block",
-							"_key": "k0015",
+							"_key": "k0030",
 							"style": "normal",
 							"markDefs": [],
 							"children": [
 								{
 									"_type": "span",
-									"_key": "k0016",
+									"_key": "k0031",
 									"text": "今後は「お知らせ」と「ブログ」で、最新情報やAI活用・新規事業に関する知見を発信してまいります。引き続きよろしくお願いいたします。"
 								}
 							]
@@ -639,39 +801,39 @@
 					"content": [
 						{
 							"_type": "block",
-							"_key": "k0017",
+							"_key": "k0032",
 							"style": "normal",
 							"markDefs": [],
 							"children": [
 								{
 									"_type": "span",
-									"_key": "k0018",
+									"_key": "k0033",
 									"text": "AI技術の導入は、多くの企業で業務効率化に成功しています。"
 								}
 							]
 						},
 						{
 							"_type": "block",
-							"_key": "k0019",
+							"_key": "k0034",
 							"style": "normal",
 							"markDefs": [],
 							"children": [
 								{
 									"_type": "span",
-									"_key": "k0020",
+									"_key": "k0035",
 									"text": "例えば、ある企業ではAIを活用したデータ分析により、業務プロセスの改善やコスト削減を実現しました。また、別の企業ではAIによる自動化ツールの導入で、作業時間を大幅に短縮し、生産性を向上させています。"
 								}
 							]
 						},
 						{
 							"_type": "block",
-							"_key": "k0021",
+							"_key": "k0036",
 							"style": "normal",
 							"markDefs": [],
 							"children": [
 								{
 									"_type": "span",
-									"_key": "k0022",
+									"_key": "k0037",
 									"text": "これらの事例は、AI技術が業務効率化において大きな効果を発揮することを示しています。"
 								}
 							]

@@ -58,6 +58,7 @@ export interface Service {
   status: string;
   title: string;
   title_en?: string;
+  url?: string;
   sort_order: number;
   summary: string;
   items?: { "name": string; "description"?: string | null }[];

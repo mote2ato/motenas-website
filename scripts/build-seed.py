@@ -48,6 +48,20 @@ def labeled(label: str, text: str) -> dict:
     }
 
 
+def linked(*parts: str | tuple[str, str]) -> dict:
+    """Paragraph whose (text, href) tuples become links."""
+    defs, children = [], []
+    for part in parts:
+        if isinstance(part, tuple):
+            text, href = part
+            key = k()
+            defs.append({"_type": "link", "_key": key, "href": href})
+            children.append(span(text, [key]))
+        else:
+            children.append(span(part))
+    return {"_type": "block", "_key": k(), "style": "normal", "markDefs": defs, "children": children}
+
+
 STR = lambda slug, label, **kw: {"slug": slug, "label": label, "type": "string", **kw}  # noqa: E731
 TEXT = lambda slug, label, **kw: {"slug": slug, "label": label, "type": "text", **kw}  # noqa: E731
 
@@ -78,6 +92,7 @@ collections = [
         "fields": [
             STR("title", "事業名", required=True, searchable=True),
             STR("title_en", "英字名"),
+            {"slug": "url", "label": "公式サイトURL", "type": "url"},
             {"slug": "sort_order", "label": "表示順（小さい順）", "type": "integer", "required": True},
             TEXT("summary", "概要", required=True, searchable=True),
             {"slug": "items", "label": "サービス内容", "type": "repeater",
@@ -214,6 +229,9 @@ pages = [
     },
 ]
 
+AIMSLAB_URL = "https://note.com/aimslab"
+YOPPARAI_URL = "https://yopparai-kikaku.com/"
+
 services = [
     {
         "id": "service-startup", "slug": "startup-consulting", "status": "published",
@@ -277,9 +295,54 @@ services = [
             ],
         },
     },
+    {
+        "id": "service-aimslab", "slug": "aimslab", "status": "published",
+        "data": {
+            "title": "AI時代のイラスト×マーケ研究室",
+            "title_en": "Illustration Marketing Lab",
+            "url": AIMSLAB_URL,
+            "sort_order": 5,
+            "summary": "イラストレーター向けのマーケティング研究・発信メディアです。noteで、AI時代でも選ばれて収益を安定させるための考え方と実践を発信しています。メンバーシップ「イラストマーケ実践コミュニティ」と、公式LINEで配布する「イラストレータータイプ診断」も運営しています。",
+            "items": [
+                {"name": "noteでの発信", "description": "駆け出しから中堅のイラストレーターに向け、集客、価格設定、発信の続け方など、作品を仕事につなげるための記事を届けます。"},
+                {"name": "イラストマーケ実践コミュニティ", "description": "noteメンバーシップのコミュニティです。学びを実践に移すための交流と相談の場を提供します。"},
+                {"name": "イラストレータータイプ診断", "description": "公式LINEで配布する無料診断です。自分のタイプを知り、次に取るべき行動を明確にします。"},
+            ],
+        },
+    },
+    {
+        "id": "service-yopparai", "slug": "yopparai-kikaku", "status": "published",
+        "data": {
+            "title": "ヨッパライ企画",
+            "title_en": "Yopparai Kikaku",
+            "url": YOPPARAI_URL,
+            "sort_order": 6,
+            "summary": "全国の酒場を紹介するWebメディアです。大衆酒場、立ち飲み、せんべろ、横丁、角打ちなどの店舗情報を集め、今夜の一軒を探す手助けをします。飲み歩きクリエイターと連携した紹介も行っています。",
+            "items": [
+                {"name": "酒場ガイド", "description": "エリアやジャンルから探せる店舗情報を掲載しています。営業時間や予算の目安など、店選びに必要な情報をそろえます。"},
+                {"name": "公認クリエイター紹介", "description": "飲み歩きを発信するクリエイターと連携し、現地の様子が伝わる写真とともに店舗を紹介します。"},
+                {"name": "SNSでの発信", "description": "Instagramなどでおすすめの店舗を定期的に紹介しています。"},
+            ],
+        },
+    },
 ]
 
 news = [
+    {
+        "id": "news-services-media", "slug": "services-media-added", "status": "published",
+        "data": {
+            "title": "事業内容に「AI時代のイラスト×マーケ研究室」と「ヨッパライ企画」を追加しました",
+            "content": [
+                p("このたび、株式会社もてなすの事業内容に、当社が運営する2つのメディアを追加しました。"),
+                linked(
+                    "「", ("AI時代のイラスト×マーケ研究室", AIMSLAB_URL),
+                    "」は、イラストレーター向けにマーケティングの研究と実践を発信するnoteです。「",
+                    ("ヨッパライ企画", YOPPARAI_URL), "」は、全国の酒場を紹介するWebメディアです。",
+                ),
+                linked("どちらも", ("事業内容のページ", "/service"), "からご覧いただけます。引き続きよろしくお願いいたします。"),
+            ],
+        },
+    },
     {
         "id": "news-renewal", "slug": "website-renewal", "status": "published",
         "data": {

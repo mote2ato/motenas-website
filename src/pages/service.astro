@@ -1,5 +1,5 @@
 ---
-import { getEmDashCollection } from "emdash";
+import { getEmDashCollection, sanitizeHref } from "emdash";
 import { PortableText } from "emdash/ui";
 import Arrow from "../components/Arrow.astro";
 import PageHeader from "../components/PageHeader.astro";
@@ -64,6 +64,14 @@ const services = servicesResult.entries;
 					<p class="lead" {...service.edit.summary}>
 						{service.data.summary}
 					</p>
+
+					{service.data.url && (
+						<div class="actions">
+							<a href={sanitizeHref(service.data.url)} class="btn" target="_blank" rel="noopener noreferrer" {...service.edit.url}>
+								公式サイトを見る <Arrow direction="up-right" />
+							</a>
+						</div>
+					)}
 
 					{service.data.items && service.data.items.length > 0 && (
 						<div class="service__group">
