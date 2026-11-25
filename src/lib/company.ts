@@ -7,7 +7,6 @@ export const COMPANY = {
 	nameEn: "motenas.inc",
 	postalCode: "〒330-0802",
 	address: "埼玉県さいたま市大宮区宮町1-5 銀座ビル7階",
-	tel: "03-4530-9588",
 	hours: "10:00-19:00［土・日・祝日除く］",
 	mapQuery: "埼玉県さいたま市大宮区宮町1-5 銀座ビル",
 } as const;

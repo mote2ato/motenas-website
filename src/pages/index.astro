@@ -88,7 +88,6 @@ const jsonLd = {
 	url: Astro.url.origin,
 	sameAs: ["https://note.com/aimslab", "https://yopparai-kikaku.com/"],
 	logo: new URL("/icon-512.png", Astro.url.origin).href,
-	telephone: COMPANY.tel,
 	address: {
 		"@type": "PostalAddress",
 		postalCode: COMPANY.postalCode.replace("〒", ""),
@@ -276,7 +275,6 @@ const jsonLd = {
 		</p>
 		<div class="actions">
 			<a href="/contact" class="btn">お問い合わせ <Arrow /></a>
-			<a href={`tel:${COMPANY.tel.replaceAll("-", "")}`} class="btn btn--ghost">TEL {COMPANY.tel}</a>
 		</div>
 		<p class="caption cta__hours">営業時間 {COMPANY.hours}</p>
 	</section>

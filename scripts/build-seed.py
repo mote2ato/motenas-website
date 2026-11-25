@@ -209,7 +209,6 @@ pages = [
             "lead": "JR大宮駅東口から徒歩1分です。",
             "facts": [
                 {"label": "本社所在地", "value": ADDRESS},
-                {"label": "TEL", "value": "03-4530-9588"},
                 {"label": "FAX", "value": "03-6779-5945"},
                 {"label": "受付時間", "value": "10:00〜19:00（土・日・祝日を除く）"},
                 {"label": "最寄駅", "value": "JR大宮駅東口 徒歩1分"},
